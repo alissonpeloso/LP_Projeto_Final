@@ -18,10 +18,18 @@ data Token = TokenNum Int
             | TokenFalse
 			| TokenLambda
 			| TokenLet
+			| TokenIn
             | TokenTypeNum
             | TokenTypeBool
             | TokenSemi
             | TokenArrow
+			| TokenEqual
+			| TokenLSBracket
+			| TokenRSBracket
+			| TokenComma
+			| TokenIsEmpty
+			| TokenHead
+			| TokenTail
             deriving Show 
 
 -- Implementar função lexer abaixo
@@ -29,11 +37,16 @@ data Token = TokenNum Int
 lexer :: String -> [Token]
 lexer [] = []
 lexer ('+':cs) = TokenPlus : lexer cs
-lexer ('-':cs) = TokenMinus : lexer cs
+lexer ('-':cs) = case (head cs) of
+					'>' -> TokenArrow : lexer (tail cs)
+					_ -> TokenMinus : lexer cs
 lexer ('*':cs) = TokenTimes : lexer cs
 lexer ('(':cs) = TokenLParen : lexer cs
 lexer (')':cs) = ToknenRParen : lexer cs
 lexer (':':cs) = TokenSemi : lexer cs
+lexer ('=':cs) = TokenEqual : lexer cs
+lexer ('[':cs) = TokenLSBracket : lexer cs
+lexer (']':cs) = TokenRSBracket : lexer cs
 lexer (c:cs)
     | isSpace c = lexer cs
     | isDigit c = lexNum (c:cs)
@@ -56,6 +69,10 @@ lexKW cs = case span isAlpha cs of
                     ("False", rest) -> TokenFalse : lexer rest
                     ("lam", rest) -> TokenLambda : lexer rest
                     ("let", rest) -> TokenLet : lexer rest
+                    ("in", rest) -> TokenIn : lexer rest
                     ("Bool", rest) -> TokenTypeBool : lexer rest
                     ("Num", rest) -> TokenTypeNum : lexer rest
-                    (s, rest) -> TokenVar (read s) : lexer rest
+                    ("isEmpty", rest) -> TokenIsEmpty : lexer rest
+                    ("head", rest) -> TokenHead : lexer rest
+                    ("tail", rest) -> TokenTail : lexer rest
+                    (s, rest) -> TokenVar (s) : lexer rest

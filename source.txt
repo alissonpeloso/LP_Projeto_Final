@@ -1,0 +1,1 @@
+lam x : Bool -> x+1 if then else - * or and Num Bool let in ( ) : oiBoi True False 

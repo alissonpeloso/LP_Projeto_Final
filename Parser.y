@@ -14,6 +14,7 @@ import Lexer
     num     { TokenNum $$ }
 	var 	{ TokenVar $$}
     '+'     { TokenPlus }
+    '='     { TokenEqual }
     '-'     { TokenMinus }
     '*'     { TokenTimes }
     '('     { TokenLParen }
@@ -27,7 +28,11 @@ import Lexer
 	False	{ TokenFalse }
 	lam		{ TokenLambda }
 	let 	{ TokenLet }
-	ty 		{ TokenTy }
+	in		{ TokenIn }
+	Num 	{ TokenTypeNum }
+	Bool 	{ TokenTypeBool }
+	':' 	{ TokenSemi }
+	"->" 	{ TokenArrow }
 
 %nonassoc if then else
 %left '+' '-'
@@ -35,29 +40,34 @@ import Lexer
 
 %%
 
-Exp     : num           { Num $1 }
-		| var           { Var $1 }
-        | Exp '+' Exp   { Add $1 $3 }
-        | Exp '-' Exp   { Minus $1 $3 }
-        | Exp '*' Exp   { Times $1 $3  }
-        | '(' Exp ')'   { Paren $2 }
-        | if Exp then Exp else Exp { If $2 $4 $6 } 
-        | Exp and Exp   { And $1 $3 }
-        | Exp or Exp   { Or $1 $3 }
-		| True		{ BTrue }
-		| False		{ BFalse }
-		| lam var ty Exp	{ Lam $2 $3 $4}
-		| Exp Exp          	{ App $1 $2 }
-		| let var Exp 	{ Let $2 $3 }
+Exp     : num           					{ Num $1 }
+		| var           					{ Var $1 }
+        | Exp '+' Exp   					{ Add $1 $3 }
+        | Exp '-' Exp   					{ Minus $1 $3 }
+        | Exp '*' Exp  						{ Times $1 $3  }
+		| '(' lam var ':' Type "->" Exp ')'	{ Lam $3 $5 $7 }
+        | '(' Exp ')'   					{ Paren $2 }
+        | if Exp then Exp else Exp 			{ If $2 $4 $6 } 
+        | Exp and Exp   					{ And $1 $3 }
+        | Exp or Exp   						{ Or $1 $3 }
+		| True								{ BTrue }
+		| False								{ BFalse }
+		| Exp Exp          					{ App $1 $2 }
+		| let var '=' Exp in Exp 			{ Let $2 $4 $6 }
 
+
+Type     : Num           	{ TNum }
+		| Bool           	{ TBool }
+		| Type "->" Type   	{ TFun $1 $3 }
 {
 
 data Ty = TBool
-	| TNum
-	| TFun Ty Ty
-	deriving (Show, Eq)
+		| TNum
+		| TFun Ty Ty
+		deriving (Show, Eq)
 
 data Expr = Num Int
+		  | Var String
           | Add Expr Expr
           | Minus Expr Expr
           | Times Expr Expr
@@ -69,8 +79,7 @@ data Expr = Num Int
 		  | BFalse
 		  | Lam String Ty Expr
 		  | App Expr Expr
-		  | Var String
-		  | Let String Expr
+		  | Let String Expr Expr
           deriving Show
 
 parseError :: [Token] -> a
