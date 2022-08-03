@@ -27,9 +27,10 @@ data Token = TokenNum Int
 			| TokenLSBracket
 			| TokenRSBracket
 			| TokenComma
-			| TokenIsEmpty
+			| TokenIsNil
 			| TokenHead
 			| TokenTail
+			| TokenTypeList
             deriving Show 
 
 -- Implementar função lexer abaixo
@@ -47,6 +48,7 @@ lexer (':':cs) = TokenSemi : lexer cs
 lexer ('=':cs) = TokenEqual : lexer cs
 lexer ('[':cs) = TokenLSBracket : lexer cs
 lexer (']':cs) = TokenRSBracket : lexer cs
+lexer (',':cs) = TokenComma : lexer cs
 lexer (c:cs)
     | isSpace c = lexer cs
     | isDigit c = lexNum (c:cs)
@@ -72,7 +74,8 @@ lexKW cs = case span isAlpha cs of
                     ("in", rest) -> TokenIn : lexer rest
                     ("Bool", rest) -> TokenTypeBool : lexer rest
                     ("Num", rest) -> TokenTypeNum : lexer rest
-                    ("isEmpty", rest) -> TokenIsEmpty : lexer rest
+                    ("List", rest) -> TokenTypeList : lexer rest
+                    ("isNil", rest) -> TokenIsNil : lexer rest
                     ("head", rest) -> TokenHead : lexer rest
                     ("tail", rest) -> TokenTail : lexer rest
                     (s, rest) -> TokenVar (s) : lexer rest

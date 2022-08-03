@@ -19,6 +19,7 @@ subst x n (Or e1 e2) = Or (subst x n e1) (subst x n e2)
 subst x n (Paren e1) = (subst x n e1)
 subst x n (Let v e1 e2) = Let v (subst x n e1) (subst x n e2)
 subst x n (If e1 e2 e3) = If (subst x n e1) (subst x n e2) (subst x n e3)
+subst x n (Const t1 e1 e2) = Const t1 (subst x n e1) (subst x n e2)
 subst x n e = e
 
 isValue :: Expr -> Bool
@@ -27,6 +28,8 @@ isValue (Var _) = True
 isValue BTrue = True
 isValue BFalse = True
 isValue (Lam _ _ _) = True
+isValue (Nil _) = True
+isValue (Const _ _ _) = True
 isValue _ = False
 
 step :: Expr -> Expr
@@ -52,6 +55,15 @@ step (If BTrue e2 e3) = e2
 step (If BFalse e2 e3) = e3
 step (If e1 e2 e3) = If (step e1) e2 e3
 step (Paren e1) = step e1
+step (Const t1 e1 e2) | isValue e1 = Const t1 e1 (step e2)
+					  | otherwise = Const t1 (step e1) e2 
+step (IsNil (Nil t1)) = BTrue 
+step (IsNil (Const _ v1 v2)) = BFalse
+step (IsNil t1) = IsNil (step t1) 
+step (Head (Const _ v1 v2)) = v1
+step (Head t1) = Head (step t1)
+step (Tail (Const _ v1 v2)) = v2
+step (Tail t1) = Tail (step t1)
 step e = e
 
 eval :: Expr -> Expr

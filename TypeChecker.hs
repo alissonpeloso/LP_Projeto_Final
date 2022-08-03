@@ -45,7 +45,22 @@ typeof ctx (If e1 e2 e3) = case (typeof ctx e1) of
 typeof ctx (Let x t1 t2) = let Just t1' = typeof ctx t1
                             in typeof ((x,t1'):ctx) t2
 typeof ctx (Paren e1) = typeof ctx e1
-
+typeof ctx (Nil t1) = Just (TList t1)
+typeof ctx (Const t1 e1 e2) = case (typeof ctx e1, typeof ctx e2) of
+								(Just t2, Just (TList t3)) -> if t2 == t3 && t1 == t2 then
+																Just (TList t1)
+															else
+																Nothing
+								_ -> Nothing
+typeof ctx (IsNil e1) = case typeof ctx e1 of
+							Just (TList t1) -> Just TBool
+							_ -> Nothing
+typeof ctx (Head e1) = case typeof ctx e1 of
+							Just (TList t1) -> Just t1
+							_ -> Nothing
+typeof ctx (Tail e1) = case typeof ctx e1 of
+							Just (TList t1) -> Just (TList t1)
+							_ -> Nothing
 
 typecheck :: Expr -> Expr
 typecheck e = case (typeof [] e) of

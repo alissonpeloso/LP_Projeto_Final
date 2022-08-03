@@ -33,6 +33,13 @@ import Lexer
 	Bool 	{ TokenTypeBool }
 	':' 	{ TokenSemi }
 	"->" 	{ TokenArrow }
+	"["		{ TokenLSBracket }
+	"]"		{ TokenRSBracket }
+	isNil	{ TokenIsNil }
+	head	{ TokenHead }
+	tail	{ TokenTail }
+	List 	{ TokenTypeList }
+	','		{ TokenComma }
 
 %nonassoc if then else
 %left '+' '-'
@@ -54,17 +61,31 @@ Exp     : num           					{ Num $1 }
 		| False								{ BFalse }
 		| Exp Exp          					{ App $1 $2 }
 		| let var '=' Exp in Exp 			{ Let $2 $4 $6 }
-
+		| Type "->" "[" "]"					{ Nil $1 }
+		| Type "->" Exp ':' "[" "]"			{ Const $1 $3 (Nil $1) }
+		| Type "->" Exp ':' Exp				{ Const $1 $3 $5 }
+		-- | Type "->" "[" ValueList "]"		{ Teste $1 $4 }
+		| isNil Exp							{ IsNil $2 }
+		| head Exp 							{ Head $2 }
+		| tail Exp 							{ Tail $2 }
 
 Type     : Num           	{ TNum }
 		| Bool           	{ TBool }
 		| Type "->" Type   	{ TFun $1 $3 }
+		| List Type 		{ TList $2 }
+
+
+-- ValueList	: Exp ',' Exp		{ VList $1 $3 }
+-- 		   | Exp ',' ValueList  { VList $1 $3 }
 {
 
 data Ty = TBool
 		| TNum
 		| TFun Ty Ty
+		| TList Ty
 		deriving (Show, Eq)
+
+-- data VList = VList Expr Expr
 
 data Expr = Num Int
 		  | Var String
@@ -80,6 +101,12 @@ data Expr = Num Int
 		  | Lam String Ty Expr
 		  | App Expr Expr
 		  | Let String Expr Expr
+		  | Nil Ty
+		  | Const Ty Expr Expr
+		  | IsNil Expr
+		  | Head Expr
+		  | Tail Expr
+		--   | Teste Ty String
           deriving Show
 
 parseError :: [Token] -> a
