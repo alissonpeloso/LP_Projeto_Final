@@ -1,0 +1,1 @@
+let multiplicaLista = (lam l:List<Num> -> (head l) * (head (tail l))) in multiplicaLista List<Num> 25 : List<Num> 98 : []

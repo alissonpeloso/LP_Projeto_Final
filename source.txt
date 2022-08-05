@@ -1,1 +1,1 @@
-if isNil (Num -> 1 : Num -> 2 : Num -> 3 : []) then 1 else 2
+List<List<Bool>> ( List <Bool> True : List <Bool> False : [])  : []
