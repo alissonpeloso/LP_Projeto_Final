@@ -1,1 +1,1 @@
-let x = True in if x then 1 else 2
+let x = True in if x and not x then 1 else 2

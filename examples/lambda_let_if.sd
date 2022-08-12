@@ -1,6 +1,9 @@
 let somaUm = (lam x:Num -> x + 1) 
 	in 
+		let isSix = 
 		if not ((somaUm 5) == 6) then
 			True
 		else
 			False
+				in
+					isSix

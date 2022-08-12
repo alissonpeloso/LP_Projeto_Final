@@ -108,7 +108,10 @@ step (IsNil (Cons _ v1 v2)) = BFalse
 step (IsNil t1) = IsNil (step t1) 
 step (Head (Nil t1)) = error "Lista vazia"
 step (Head (Cons _ v1 v2)) = v1
-step (Head t1) = Head (step t1)
+step (Head t1) = if isValue t1 then
+                    error "Erro de execução"
+                 else
+                    Head (step t1)
 step (Tail (Nil t1)) = error "Lista vazia"
 step (Tail (Cons _ v1 v2)) = v2
 step (Tail t1) = Tail (step t1)

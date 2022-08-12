@@ -1,0 +1,5 @@
+let list =  List<List<Bool>> (List <Bool> True : List <Bool> False : []) :  
+            List<List<Bool>> (List <Num> False : List <Bool> False : [])  : 
+            []
+    in 
+        tail list

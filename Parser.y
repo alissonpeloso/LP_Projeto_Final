@@ -146,7 +146,7 @@ instance Show Expr where
     show (Lam v t1 t2) = " ( lam " ++ v ++ ":" ++ show t1 ++ " -> " ++ show t2 ++ " ) "
     show (App t1 t2) =   show t1 ++ " " ++ show t2
     show (Nil t1 ) = " [] "
-    show (Cons t1 e1 e2) = show t1 ++ "> " ++ show e1 ++ " : " ++ show e2	
+    show (Cons t1 e1 e2) ="List<" ++ show t1 ++ "> " ++ show e1 ++ " : " ++ show e2	
     show (IsNil t1 ) = show t1
     show (Head t1 ) = show t1
     show (Tail t1 ) = show t1
@@ -162,5 +162,5 @@ instance Show Ty where
     show (TBool) = "Bool"
     show (TNum) = "Num"
     show (TFun t1 t2) = show t1 ++ " -> " ++ show t2
-    show (TList t1) = "List<"++show t1++">"
+    show (TList t1) = "List<" ++ show t1 ++ ">"
 }
